@@ -66,7 +66,7 @@ async function salvarMovimentacao(dados) {
 }
 
 async function salvarProduto(produto) {
-  const res = await fetch('/api/salvarProduto', {
+  const res = await fetch('/pages/api/salvarProduto', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ acao: 'salvarProduto', ...produto })
