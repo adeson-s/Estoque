@@ -50,7 +50,7 @@ export default function Produtos() {
     const codigo = Date.now();
 
     // 2️⃣ Gerar QR_CODE a partir do código
-    const QR_CODE = `PROD:${codigo}`;
+    const QR_CODE = codigo;
 
     // 3️⃣ Enviar para Google Sheets
     const res = await SheetsService.salvarProduto({
