@@ -23,7 +23,34 @@
     --bnav-inactive: #9CA3AF;
     --bnav-cta: #009373;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* Fundos */
+  --color-background-primary:   #ffffff;
+  --color-background-secondary: #f5f5f3;
+  --color-background-tertiary:  #eeede8;
+
+  /* Texto */
+  --color-text-primary:   #1a1a18;
+  --color-text-secondary: #5f5e5a;
+  --color-text-tertiary:  #888780;
+
+  /* Bordas */
+  --color-border-tertiary:  rgba(0, 0, 0, 0.12);
+  --color-border-secondary: rgba(0, 0, 0, 0.22);
+  --color-border-primary:   rgba(0, 0, 0, 0.35);
+
+  /* Tipografia */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* Border radius */
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
 }
+
+
+
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -505,56 +532,6 @@ tbody tr:hover { background: var(--bg-main); }
 .feedback.success { background: #D1FAE5; color: #059669; }
 .feedback.error   { background: #FEE2E2; color: #DC2626; }
 
-/* ============================================================
-   MODALS
-   ============================================================ */
-.modal-overlay {
-    display: flex;
-    position: fixed;
-    z-index: 999;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    justify-content: center;
-}
-
-.modal-content {
-    background: white;
-    top: 5px;
-    width: 420px; height: 100%;
-    max-width: 95vw;
-    border-radius: 16px;
-    padding: 24px;
-    animation: modalFadeIn 0.22s ease;
-    position: relative;    
-        overflow-y: auto;
-}
-
-.modal-handle { display: none; }
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.modal-header h3 { font-size: 18px; font-weight: 600; }
-.modal-header .close { cursor: pointer; font-size: 22px; color: var(--text-light); line-height: 1; background: none; border: none; font-family: inherit; }
-
-.modal-body { display: flex; flex-direction: column; gap: 16px; }
-
-.modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 24px;
-}
-
-@keyframes modalFadeIn {
-    from { opacity: 0; transform: translateY(-12px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-}
 
 /* ============================================================
    BOTTOM NAV — hidden desktop
@@ -582,13 +559,19 @@ tbody tr:hover { background: var(--bg-main); }
         box-shadow: 0 2px 12px rgba(0,147,115,0.25);
     }
 
-    .mobile-header-logo img {
-        height: 36px;
-        width: auto;
-        object-fit: contain;
-        filter: brightness(0) invert(1);
-        opacity: 0.9;
-    }
+    .mobile-logo {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.mobile-logo img {
+    display: block;
+    height: 36px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.9;
+}
 
     .mobile-header-center h1 {
         font-size: 17px;
@@ -773,3 +756,5 @@ tbody tr:hover { background: var(--bg-main); }
         display: flex; align-items: center; justify-content: center; line-height: 1;
     }
 }
+
+

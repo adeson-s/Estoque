@@ -1,7 +1,7 @@
 // Feito por Adeson Souza
 // Serviço de integração com Google Sheets
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyAKIsUlyCTuaAz207yVQJkEJGx0P4ARE_M1PTI78sEJBuTtyQ-ApY3QkX6SN0SmcfO/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyNY0dSsovyPSuoWtTxrIv-HWfO2FFv4sqrcgSqEGAsHYRi6ljIcsdRlkWy_BsET3fo/exec";
 
 const CONFIG = {
   SHEETS: {
@@ -61,7 +61,12 @@ async function carregarTodos() {
 async function salvarMovimentacao(dados) {
   const formData = new URLSearchParams();
   formData.append("dados", JSON.stringify(dados));
-  const res = await fetch(SCRIPT_URL, { method: "POST", body: formData });
+
+  const res = await fetch(SCRIPT_URL, {
+    method: "POST",
+    body: formData
+  });
+
   return res.json();
 }
 
@@ -93,8 +98,41 @@ async function testarConexao() {
 
 function formatDate(val) {
   if (!val) return '';
-  if (val.includes('/')) return val;
-  try { return new Date(val).toLocaleDateString('pt-BR'); } catch { return val; }
+
+  // Já está em BR
+  if (typeof val === 'string' && val.includes('/')) return val;
+
+  let date;
+
+  // 🧮 Número do Sheets
+  if (!isNaN(val)) {
+    const utc = new Date((Number(val) - 25569) * 86400 * 1000);
+    date = new Date(
+      utc.getUTCFullYear(),
+      utc.getUTCMonth(),
+      utc.getUTCDate()
+    );
+  }
+
+  // 📄 ISO (yyyy-MM-dd) → CORRETO (SEM UTC)
+  else if (typeof val === 'string' && val.includes('-')) {
+    const [ano, mes, dia] = val.split('-').map(Number);
+    date = new Date(ano, mes - 1, dia);
+  }
+
+  // fallback
+  else {
+    const d = new Date(val);
+    if (isNaN(d)) return val;
+
+    date = new Date(
+      d.getFullYear(),
+      d.getMonth(),
+      d.getDate()
+    );
+  }
+
+  return date.toLocaleDateString('pt-BR');
 }
 
 function clearCache() { Object.keys(cache).forEach(k => delete cache[k]); }
