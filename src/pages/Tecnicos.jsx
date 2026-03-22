@@ -7,11 +7,39 @@ import SheetsService from '../services/SheetsService';
 export default function Tecnicos() {
   const { dados, carregarDados } = useApp();
   const { tecnicos } = dados;
+
   const [showModal, setShowModal] = useState(false);
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const [tecnicoEditando, setTecnicoEditando] = useState(null);
   const [form, setForm] = useState({ nome: '', placa: '', status: '' });
   const [loading, setLoading] = useState(false);
 
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+
+  const abrirModalNovo = () => {
+    setModoEdicao(false);
+    setTecnicoEditando(null);
+    setForm({ nome: '', placa: '', status: '' });
+    setShowModal(true);
+  };
+
+  const abrirModalEdicao = (tecnico) => {
+    setModoEdicao(true);
+    setTecnicoEditando(tecnico);
+    setForm({
+      nome: tecnico['NOME COMPLETO'] || tecnico.NOME || '',
+      placa: tecnico.PLACA || '',
+      status: tecnico.STATUS || '',
+    });
+    setShowModal(true);
+  };
+
+  const fecharModal = () => {
+    setShowModal(false);
+    setModoEdicao(false);
+    setTecnicoEditando(null);
+    setForm({ nome: '', placa: '', status: '' });
+  };
 
   const salvar = async () => {
     if (!form.nome || !form.placa || !form.status) {
@@ -20,16 +48,26 @@ export default function Tecnicos() {
     }
     setLoading(true);
     try {
-      const res = await SheetsService.salvarMovimentacao({
-        acao: 'salvarTecnico',
-        nome: form.nome,
-        placa: form.placa,
-        status: form.status,
-      });
+      const payload = modoEdicao
+        ? {
+            acao: 'editarTecnico',
+            id: tecnicoEditando.ID,
+            nome: form.nome,
+            placa: form.placa,
+            status: form.status,
+          }
+        : {
+            acao: 'salvarTecnico',
+            nome: form.nome,
+            placa: form.placa,
+            status: form.status,
+          };
+
+      const res = await SheetsService.salvarMovimentacao(payload);
       if (!res.success) throw new Error(res.error);
-      alert('Técnico cadastrado com sucesso!');
-      setShowModal(false);
-      setForm({ nome: '', placa: '', status: '' });
+
+      alert(modoEdicao ? 'Técnico atualizado com sucesso!' : 'Técnico cadastrado com sucesso!');
+      fecharModal();
       await carregarDados();
     } catch (err) {
       alert('Erro ao salvar técnico: ' + err.message);
@@ -45,7 +83,7 @@ export default function Tecnicos() {
         <div className="table-card">
           <div className="table-header">
             <h3>Técnicos Cadastrados</h3>
-            <button className="btn-primary" onClick={() => setShowModal(true)}>
+            <button className="btn-primary" onClick={abrirModalNovo}>
               <i className="fas fa-plus"></i> Novo Técnico
             </button>
           </div>
@@ -57,6 +95,7 @@ export default function Tecnicos() {
                   <th>Nome</th>
                   <th>Placa</th>
                   <th>Status</th>
+                  <th>Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -70,11 +109,32 @@ export default function Tecnicos() {
                         {t.STATUS || '—'}
                       </span>
                     </td>
+                    <td>
+                      <button
+                        className="btn-icon"
+                        title="Editar técnico"
+                        onClick={() => abrirModalEdicao(t)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: 'var(--primary, #3b82f6)',
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          fontSize: '14px',
+                          transition: 'opacity 0.2s',
+                        }}
+                        onMouseOver={e => (e.currentTarget.style.opacity = '0.7')}
+                        onMouseOut={e => (e.currentTarget.style.opacity = '1')}
+                      >
+                        <i className="fas fa-edit"></i>
+                      </button>
+                    </td>
                   </tr>
                 ))}
                 {tecnicos.length === 0 && (
                   <tr>
-                    <td colSpan="4" style={{ textAlign: 'center', color: 'var(--text-light)' }}>
+                    <td colSpan="5" style={{ textAlign: 'center', color: 'var(--text-light)' }}>
                       Nenhum técnico cadastrado
                     </td>
                   </tr>
@@ -87,13 +147,13 @@ export default function Tecnicos() {
 
       {showModal && (
         <Modal
-          title="Novo Técnico"
-          onClose={() => setShowModal(false)}
+          title={modoEdicao ? 'Editar Técnico' : 'Novo Técnico'}
+          onClose={fecharModal}
           footer={
             <>
-              <button className="btn-secondary" onClick={() => setShowModal(false)}>Cancelar</button>
+              <button className="btn-secondary" onClick={fecharModal}>Cancelar</button>
               <button className="btn-primary" onClick={salvar} disabled={loading}>
-                {loading ? 'Salvando...' : 'Salvar Técnico'}
+                {loading ? 'Salvando...' : modoEdicao ? 'Salvar Alterações' : 'Salvar Técnico'}
               </button>
             </>
           }
