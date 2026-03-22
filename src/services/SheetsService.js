@@ -73,11 +73,10 @@ async function salvarProduto(produto) {
     ...produto
   }));
 
-  const res = await fetch(SCRIPT_URL, {
-  method: "POST",
-  body: new URLSearchParams({
-    dados: JSON.stringify({ acao: "salvarProduto", ...produto })
-  })
+  const res = await fetch('/api/salvarProduto', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(produto)
 });
 
   return res.json();
