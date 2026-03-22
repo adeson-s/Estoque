@@ -74,9 +74,11 @@ async function salvarProduto(produto) {
   }));
 
   const res = await fetch(SCRIPT_URL, {
-    method: "POST",
-    body: formData
-  });
+  method: "POST",
+  body: new URLSearchParams({
+    dados: JSON.stringify({ acao: "salvarProduto", ...produto })
+  })
+});
 
   return res.json();
 }
