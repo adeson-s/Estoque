@@ -20,11 +20,12 @@ export default function Produtos() {
   const [showModal, setShowModal] = useState(false);
   const [busca, setBusca] = useState('');
   const [form, setForm] = useState({
-    nome: '',
-    unidade: '',
-    estoque: '',
-    minimo: ''
-  });
+  nome: '',
+  unidade: '',
+  estoque: '',
+  minimo: '',
+  codigoBarra: '' 
+});
 
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState(null);
@@ -36,7 +37,7 @@ export default function Produtos() {
     return `PROD:${produto.codigo}`;
   };
 
-  const salvar = async () => {
+ const salvar = async () => {
   if (!form.nome || !form.unidade || form.estoque === '' || form.minimo === '') {
     setFeedback('Preencha todos os campos');
     return;
@@ -46,28 +47,26 @@ export default function Produtos() {
   setFeedback(null);
 
   try {
-    // 1️⃣ Gerar código único (timestamp)
-    const codigo = Date.now();
+    // 🔹 QR único (melhor que timestamp puro)
+    const qrCode = `PROD-${Date.now().toString(36).toUpperCase()}`;
 
-    // 2️⃣ Gerar QR_CODE a partir do código
-    const QR_CODE = codigo;
-
-    // 3️⃣ Enviar para Google Sheets
     const res = await SheetsService.salvarProduto({
-      codigo,
+      acao: 'salvarProduto',
+      codigo: form.codigoBarra || '', // 👈 opcional
       nome: form.nome,
       unidade: form.unidade,
       estoque: form.estoque,
       minimo: form.minimo,
-      QR_CODE // ✅ garante que o QR_CODE vai para o Apps Script
+      QR_CODE: qrCode // 👈 sempre gerado
     });
 
     if (!res.success) throw new Error(res.error || 'Erro ao salvar');
 
     setShowModal(false);
-    setForm({ nome: '', unidade: '', estoque: '', minimo: '' });
+    setForm({ nome: '', unidade: '', estoque: '', minimo: '', codigoBarra: '' });
 
     await carregarDados();
+
   } catch (err) {
     setFeedback('Erro: ' + err.message);
   } finally {
@@ -216,6 +215,15 @@ export default function Produtos() {
           </div>
 
           <div className="form-group">
+  <label>Código de Barras (opcional)</label>
+  <input 
+    name="codigoBarra" 
+    value={form.codigoBarra} 
+    onChange={handleChange} 
+  />
+</div>
+
+          <div className="form-group">
             <label>Unidade</label>
             <select name="unidade" value={form.unidade} onChange={handleChange}>
               <option value="">Selecione</option>
@@ -236,10 +244,10 @@ export default function Produtos() {
           {/* PREVIEW QR */}
           {form.nome && (
             <div style={{ textAlign: 'center', marginTop: 20 }}>
-              <QRCodeCanvas
-                value={`PROD:PREVIEW`}
-                size={100}
-              />
+             <QRCodeCanvas
+  value={form.nome ? `PRE-${form.nome}` : 'PREVIEW'}
+  size={100}
+/>
               <p>QR será gerado automaticamente</p>
             </div>
           )}
