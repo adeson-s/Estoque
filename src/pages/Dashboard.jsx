@@ -28,6 +28,7 @@ const S_KEYS   = Object.keys(STATUS_CFG);
 const S_COLORS = S_KEYS.map(k => STATUS_CFG[k].color);
 const PROD_CLR = ['#2563EB','#4F7FEF','#7BA3F5','#A8C0FA','#C7D9FF'];
 
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const initials   = (n='') => n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
 const AV_PALETTE = [
@@ -48,9 +49,8 @@ const byPeriod = (movs, p) => {
   cut.setHours(0, 0, 0, 0);
 
   return movs.filter(m => {
-    const d = parseDate(m.DATA);
-    console.log('RAW:', m.DATA, typeof m.DATA);
-console.log('PARSED:', parseDate(m.DATA));
+    const d = parseDate(m.DATA); 
+  
     return d && d >= cut;
   });
 };
@@ -510,4 +510,7 @@ export default function Dashboard() {
       `}</style>
     </div>
   );
+
+
+   
 }

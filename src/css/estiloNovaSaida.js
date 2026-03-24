@@ -1,6 +1,7 @@
+const mobile = '@media (max-width: 768px)';
 
-export const s = {  
-root: {
+export const s = {
+  root: {
     background: '#FFF',
     padding: '0 1rem 2rem',
     maxWidth: 1100,
@@ -9,6 +10,7 @@ root: {
     flexDirection: 'column',
     gap: 10,
   },
+
   topBar: {
     display: 'flex',
     gap: 10,
@@ -17,7 +19,13 @@ root: {
     border: '0.5px solid var(--color-border-tertiary)',
     borderRadius: 12,
     padding: '12px 16px',
+
+    [mobile]: {
+      flexDirection: 'column',
+      padding: '10px',
+    },
   },
+
   topField: {
     flex: 1,
     minWidth: 130,
@@ -25,12 +33,14 @@ root: {
     flexDirection: 'column',
     gap: 4,
   },
+
   label: {
     fontSize: 11,
     fontWeight: 500,
     color: 'var(--color-text-secondary)',
     letterSpacing: '0.03em',
   },
+
   input: {
     padding: '7px 10px',
     fontSize: 13,
@@ -41,12 +51,18 @@ root: {
     width: '100%',
     boxSizing: 'border-box',
   },
+
   body: {
     display: 'grid',
     gridTemplateColumns: '1fr 320px',
     gap: 10,
     alignItems: 'start',
+
+    [mobile]: {
+      gridTemplateColumns: '1fr',
+    },
   },
+
   leftCol: {
     background: 'var(--color-background-primary)',
     border: '0.5px solid var(--color-border-tertiary)',
@@ -54,7 +70,12 @@ root: {
     overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
+
+    [mobile]: {
+      marginBottom: '65vh',
+    },
   },
+
   rightCol: {
     background: 'var(--color-background-primary)',
     border: '0.5px solid var(--color-border-tertiary)',
@@ -63,7 +84,18 @@ root: {
     flexDirection: 'column',
     minHeight: 300,
     overflow: 'visible',
+
+    [mobile]: {
+      position: 'fixed',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      zIndex: 1000,
+      borderRadius: '12px 12px 0 0',
+      maxHeight: '60vh',
+    },
   },
+
   colHeader: {
     display: 'flex',
     alignItems: 'center',
@@ -72,6 +104,7 @@ root: {
     borderBottom: '0.5px solid var(--color-border-tertiary)',
     gap: 8,
   },
+
   colTitle: {
     fontSize: 13,
     fontWeight: 500,
@@ -80,6 +113,7 @@ root: {
     alignItems: 'center',
     gap: 6,
   },
+
   countPill: {
     fontSize: 11,
     color: 'var(--color-text-secondary)',
@@ -88,6 +122,7 @@ root: {
     borderRadius: 20,
     padding: '1px 7px',
   },
+
   btnQR: {
     display: 'flex',
     alignItems: 'center',
@@ -101,6 +136,7 @@ root: {
     color: 'var(--color-text-secondary)',
     cursor: 'pointer',
   },
+
   searchWrap: {
     position: 'relative',
     padding: '10px 14px',
@@ -108,11 +144,13 @@ root: {
     display: 'flex',
     alignItems: 'center',
   },
+
   searchIcon: {
     position: 'absolute',
     left: 24,
     color: 'var(--color-text-secondary)',
   },
+
   searchInput: {
     width: '100%',
     padding: '6px 28px',
@@ -123,6 +161,7 @@ root: {
     color: 'var(--color-text-primary)',
     boxSizing: 'border-box',
   },
+
   searchClear: {
     position: 'absolute',
     right: 22,
@@ -132,12 +171,20 @@ root: {
     fontSize: 11,
     color: 'var(--color-text-secondary)',
   },
+
   prodGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(108px, 1fr))',
     gap: 8,
     padding: 12,
+
+    [mobile]: {
+      gridTemplateColumns: 'repeat(2, 1fr)',
+      gap: 6,
+      padding: 10,
+    },
   },
+
   prodCard: {
     border: '0.5px solid',
     borderRadius: 10,
@@ -149,23 +196,31 @@ root: {
     textAlign: 'center',
     transition: 'border-color 0.1s',
   },
+
   prodNome: {
     fontSize: 11,
     fontWeight: 500,
     color: 'var(--color-text-primary)',
     lineHeight: 1.3,
     wordBreak: 'break-word',
+
+    [mobile]: {
+      fontSize: 10,
+    },
   },
+
   prodHint: {
     fontSize: 10,
     color: 'var(--color-text-secondary)',
   },
+
   prodQtyRow: {
     display: 'flex',
     alignItems: 'center',
     gap: 4,
     marginTop: 2,
   },
+
   qtyBtn: {
     width: 22,
     height: 22,
@@ -181,6 +236,7 @@ root: {
     lineHeight: 1,
     flexShrink: 0,
   },
+
   qtyVal: {
     fontSize: 13,
     fontWeight: 500,
@@ -188,6 +244,7 @@ root: {
     minWidth: 18,
     textAlign: 'center',
   },
+
   cartBadge: {
     background: '#185FA5',
     color: '#fff',
@@ -198,6 +255,7 @@ root: {
     minWidth: 20,
     textAlign: 'center',
   },
+
   emptyCart: {
     flex: 1,
     display: 'flex',
@@ -207,16 +265,20 @@ root: {
     padding: '2.5rem 1rem',
     textAlign: 'center',
   },
+
   cartList: {
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
+    overflowY: 'auto',
   },
+
   cartItem: {
     borderBottom: '0.5px solid var(--color-border-tertiary)',
     display: 'flex',
     flexDirection: 'column',
   },
+
   cartItemTop: {
     display: 'flex',
     alignItems: 'flex-start',
@@ -224,6 +286,7 @@ root: {
     padding: '10px 14px 4px',
     gap: 8,
   },
+
   cartItemNome: {
     fontSize: 13,
     fontWeight: 500,
@@ -233,17 +296,20 @@ root: {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   },
+
   cartItemQtyRow: {
     display: 'flex',
     alignItems: 'center',
     gap: 5,
   },
+
   cartItemRight: {
     display: 'flex',
     alignItems: 'center',
     gap: 6,
     flexShrink: 0,
   },
+
   statusBadge: {
     fontSize: 11,
     fontWeight: 500,
@@ -257,6 +323,7 @@ root: {
     gap: 3,
     background: 'transparent',
   },
+
   statusDrop: {
     position: 'absolute',
     right: 0,
@@ -269,6 +336,7 @@ root: {
     minWidth: 150,
     boxShadow: '0 2px 10px rgba(0,0,0,0.08)',
   },
+
   statusOpt: {
     display: 'flex',
     alignItems: 'center',
@@ -283,12 +351,14 @@ root: {
     width: '100%',
     textAlign: 'left',
   },
+
   statusDot: {
     width: 8,
     height: 8,
     borderRadius: '50%',
     flexShrink: 0,
   },
+
   delBtn: {
     width: 22,
     height: 22,
@@ -303,6 +373,7 @@ root: {
     justifyContent: 'center',
     flexShrink: 0,
   },
+
   obsTextarea: {
     width: '100%',
     padding: '5px 8px',
@@ -317,6 +388,7 @@ root: {
     boxSizing: 'border-box',
     overflow: 'hidden',
   },
+
   cartFooter: {
     padding: '10px 14px',
     borderTop: '0.5px solid var(--color-border-tertiary)',
@@ -324,6 +396,7 @@ root: {
     flexDirection: 'column',
     gap: 8,
   },
+
   cartMeta: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -332,6 +405,7 @@ root: {
     flexWrap: 'wrap',
     gap: 4,
   },
+
   btnConfirmar: {
     width: '100%',
     padding: '10px',
@@ -341,7 +415,13 @@ root: {
     borderRadius: 8,
     fontSize: 14,
     fontWeight: 500,
+
+    [mobile]: {
+      padding: '14px',
+      fontSize: 16,
+    },
   },
+
   feedback: {
     margin: '0 14px 12px',
     padding: '9px 12px',
@@ -350,6 +430,7 @@ root: {
     border: '0.5px solid',
     fontWeight: 500,
   },
+
   qrBackdrop: {
     position: 'fixed',
     inset: 0,
@@ -359,6 +440,7 @@ root: {
     justifyContent: 'center',
     zIndex: 9999,
   },
+
   qrModal: {
     background: 'var(--color-background-primary)',
     borderRadius: 14,
@@ -366,6 +448,7 @@ root: {
     maxWidth: '95vw',
     overflow: 'hidden',
   },
+
   qrHeader: {
     display: 'flex',
     alignItems: 'center',
@@ -373,11 +456,13 @@ root: {
     padding: '12px 14px',
     borderBottom: '0.5px solid var(--color-border-tertiary)',
   },
+
   qrTitle: {
     fontSize: 14,
     fontWeight: 500,
     color: 'var(--color-text-primary)',
   },
+
   qrCloseBtn: {
     width: 26,
     height: 26,
@@ -391,17 +476,20 @@ root: {
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   qrVideoWrap: {
     position: 'relative',
     background: '#000',
     aspectRatio: '1',
   },
+
   qrVideo: {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
     display: 'block',
   },
+
   qrFinder: {
     position: 'absolute',
     top: '50%',
@@ -413,6 +501,7 @@ root: {
     borderRadius: 10,
     boxSizing: 'border-box',
   },
+
   qrErro: {
     padding: 16,
     fontSize: 13,
@@ -420,6 +509,7 @@ root: {
     background: '#FCEBEB',
     textAlign: 'center',
   },
+
   qrDica: {
     padding: '10px 14px',
     fontSize: 12,

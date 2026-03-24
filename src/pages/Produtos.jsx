@@ -473,7 +473,7 @@ export default function Produtos() {
                   ))}
                 </div>
                 <div className="qr-preview-box" style={{ width: 140, flexShrink: 0 }}>
-                  <QRCodeCanvas value={`PRE-${form.nome}`} size={300} level="M" />
+                  <QRCodeCanvas value={`PRE-${form.nome}`}  size={300} level="M" style={{ width: 100, height: 100, }} />
                   <p>QR Code</p>
                   <div className="qr-label">gerado ao salvar</div>
                 </div>
