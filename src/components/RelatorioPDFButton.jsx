@@ -74,7 +74,7 @@ export default function RelatorioPDFButton({
 
   return (
     <button
-      className="btn-relatorio-pdf"
+      className="btn-icon"
       onClick={handleGerar}
       disabled={gerando || !filtrados.length}
       title={filtrados.length ? `Gerar PDF com ${filtrados.length} registro(s)` : 'Sem registros para exportar'}
