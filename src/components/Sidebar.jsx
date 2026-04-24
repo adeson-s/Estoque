@@ -4,7 +4,8 @@ import { useApp } from '../AppContext';
 
 const navItems = [
   { page: '/dashboard',     icon: 'fas fa-chart-line', label: 'Dashboard' },
-  { page: '/saida',         icon: 'fas fa-box-open',   label: 'Nova Saída' },
+  { page: '/saida',         icon: 'fas fa-box-open',   label: 'Nova Reposição' },  
+   { page: '/transferencia',icon: 'fas fa-exchange-alt',       label: 'Transferencia' },
   { page: '/movimentacoes', icon: 'fas fa-list',        label: 'Movimentações' },
   { page: '/tecnicos',      icon: 'fas fa-users',       label: 'Técnicos' },
   { page: '/produtos',      icon: 'fas fa-boxes',       label: 'Produtos' },

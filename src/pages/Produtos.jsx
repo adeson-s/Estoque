@@ -4,6 +4,7 @@ import PageHeader from '../components/PageHeader';
 import Modal from '../components/Modal';
 import SheetsService from '../services/SheetsService';
 import { QRCodeCanvas } from 'qrcode.react';
+import DetalheProduto from '../components/Detalheproduto';
 import '../css/estiloProdutos.css';
 
 const unidades = ['PACOTE', 'UN', 'MT', 'KG', 'LT'];
@@ -30,14 +31,8 @@ export default function Produtos() {
   const [loading, setLoading]   = useState(false);
   const [feedback, setFeedback] = useState(null);
 
-  // ── Modal edição ──
-  const [showEditModal, setShowEditModal]     = useState(false);
-  const [produtoEditando, setProdutoEditando] = useState(null);
-  const [formEdit, setFormEdit] = useState({
-    nome: '', unidade: '', estoque: '', minimo: '', codigoBarra: ''
-  });
-  const [loadingEdit, setLoadingEdit]   = useState(false);
-  const [feedbackEdit, setFeedbackEdit] = useState(null);
+  // ── Detalhe do produto ──
+  const [produtoDetalhe, setProdutoDetalhe] = useState(null);
 
   const qrPrintRefs = useRef({});
 
@@ -86,53 +81,6 @@ export default function Produtos() {
     }
   };
 
-  // ── Handlers edição ──
-  const abrirEdicao = (produto) => {
-    setProdutoEditando(produto);
-    setFormEdit({
-      nome:        produto.PRODUTO           || '',
-      unidade:     produto.UNIDADE           || '',
-      estoque:     produto['ESTOQUE ATUAL']  || '',
-      minimo:      produto['ESTOQUE MÍNIMO'] || '',
-      codigoBarra: produto['CÓDIGO']         || '',
-    });
-    setFeedbackEdit(null);
-    setShowEditModal(true);
-  };
-
-  const fecharEdicao = () => {
-    setShowEditModal(false);
-    setProdutoEditando(null);
-    setFeedbackEdit(null);
-  };
-
-  const salvarEdicao = async () => {
-    if (!formEdit.nome.trim() || !formEdit.unidade) {
-      setFeedbackEdit('Preencha nome e unidade obrigatórios');
-      return;
-    }
-    setLoadingEdit(true);
-    setFeedbackEdit(null);
-    try {
-      const res = await SheetsService.salvarProduto({
-        acao:    'editarProduto',
-        qrCode:  produtoEditando.QR_CODE,
-        codigo:  formEdit.codigoBarra || '',
-        nome:    formEdit.nome,
-        unidade: formEdit.unidade,
-        estoque: formEdit.estoque,
-        minimo:  formEdit.minimo,
-      });
-      if (!res.success) throw new Error(res.error || 'Erro ao salvar');
-      fecharEdicao();
-      await carregarDados();
-    } catch (err) {
-      setFeedbackEdit('Erro: ' + err.message);
-    } finally {
-      setLoadingEdit(false);
-    }
-  };
-
   // ── Impressão QR ──
   const imprimirQR = (produto) => {
     const canvas = qrPrintRefs.current[produto.QR_CODE];
@@ -167,7 +115,7 @@ export default function Produtos() {
       (p.PRODUTO  || '').toLowerCase().includes(texto) ||
       (p.QR_CODE  || '').toLowerCase().includes(texto) ||
       (p['CÓDIGO'] || '').toLowerCase().includes(texto);
-    const atual   = parseInt(p['ESTOQUE ATUAL'])  || 0;
+    const atual   = parseInt(p['ESTOQUE_GALPAO'])  || 0;
     const minimo  = parseInt(p['ESTOQUE MÍNIMO']) || 0;
     const st      = statusEstoque(atual, minimo);
     const matchStatus  = filtroStatus  === 'TODOS' || st.text === filtroStatus;
@@ -177,9 +125,9 @@ export default function Produtos() {
 
   const contadores = {
     TODOS:   produtos.length,
-    OK:      produtos.filter(p => statusEstoque(parseInt(p['ESTOQUE ATUAL'])||0, parseInt(p['ESTOQUE MÍNIMO'])||0).text === 'OK').length,
-    ALERTA:  produtos.filter(p => statusEstoque(parseInt(p['ESTOQUE ATUAL'])||0, parseInt(p['ESTOQUE MÍNIMO'])||0).text === 'ALERTA').length,
-    CRÍTICO: produtos.filter(p => statusEstoque(parseInt(p['ESTOQUE ATUAL'])||0, parseInt(p['ESTOQUE MÍNIMO'])||0).text === 'CRÍTICO').length,
+    OK:      produtos.filter(p => statusEstoque(parseInt(p['ESTOQUE_GALPAO'])||0, parseInt(p['ESTOQUE MÍNIMO'])||0).text === 'OK').length,
+    ALERTA:  produtos.filter(p => statusEstoque(parseInt(p['ESTOQUE_GALPAO'])||0, parseInt(p['ESTOQUE MÍNIMO'])||0).text === 'ALERTA').length,
+    CRÍTICO: produtos.filter(p => statusEstoque(parseInt(p['ESTOQUE_GALPAO'])||0, parseInt(p['ESTOQUE MÍNIMO'])||0).text === 'CRÍTICO').length,
   };
 
   return (
@@ -274,14 +222,18 @@ export default function Produtos() {
               </thead>
               <tbody>
                 {listaFiltrada.map((p, i) => {
-                  const atual   = parseInt(p['ESTOQUE ATUAL'])  || 0;
+                  const atual   = parseInt(p['ESTOQUE_GALPAO'])  || 0;
                   const minimo  = parseInt(p['ESTOQUE MÍNIMO']) || 0;
                   const st      = statusEstoque(atual, minimo);
                   const pct     = minimo > 0 ? Math.min((atual / (minimo * 3)) * 100, 100) : 100;
                   const barColor = st.cls === 'danger' ? '#ef4444' : st.cls === 'warning' ? '#f59e0b' : '#22c55e';
 
                   return (
-                    <tr key={i}>
+                    <tr
+                      key={i}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setProdutoDetalhe(p)}
+                    >
                       <td style={{ fontFamily: 'monospace', fontSize: 12, color: '#94a3b8' }}>
                         {p['CÓDIGO'] || `#${String(i + 1).padStart(3, '0')}`}
                       </td>
@@ -322,7 +274,7 @@ export default function Produtos() {
                           {/* Imprimir QR */}
                           <button
                             className="action-btn print-btn"
-                            onClick={() => imprimirQR(p)}
+                            onClick={e => { e.stopPropagation(); imprimirQR(p); }}
                             onMouseEnter={e => { e.currentTarget.style.background = '#1e293b'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#1e293b'; }}
                             onMouseLeave={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#475569'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
                           >
@@ -331,21 +283,7 @@ export default function Produtos() {
                               <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
                               <rect x="6" y="14" width="12" height="8"/>
                             </svg>
-                            Imprimir QR
-                          </button>
-
-                          {/* Editar */}
-                          <button
-                            className="action-btn edit-btn"
-                            onClick={() => abrirEdicao(p)}
-                            onMouseEnter={e => { e.currentTarget.style.background = '#2563eb'; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = '#2563eb'; }}
-                            onMouseLeave={e => { e.currentTarget.style.background = '#f8fafc'; e.currentTarget.style.color = '#475569'; e.currentTarget.style.borderColor = '#e2e8f0'; }}
-                          >
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                            </svg>
-                            Editar
+                            Imprimir
                           </button>
                         </div>
                       </td>
@@ -498,112 +436,24 @@ export default function Produtos() {
         </Modal>
       )}
 
-      {/* ─── MODAL EDITAR PRODUTO ─── */}
-      {showEditModal && produtoEditando && (
-        <Modal title="Editar Produto" onClose={fecharEdicao} footer={null}>
-
-          {/* Cabeçalho com info do produto */}
-          <div style={{
-            background: '#f8fafc', borderRadius: 10, padding: '10px 14px',
-            marginBottom: 20, border: '1px solid #e2e8f0',
-            display: 'flex', alignItems: 'center', gap: 10
-          }}>
-            <div style={{
-              width: 34, height: 34, borderRadius: 8, background: '#e0e7ff',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
-            }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2">
-                <rect x="2" y="3" width="20" height="14" rx="2"/>
-                <line x1="8" y1="21" x2="16" y2="21"/>
-                <line x1="12" y1="17" x2="12" y2="21"/>
-              </svg>
-            </div>
-            <div>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#1e293b' }}>
-                {produtoEditando.PRODUTO}
-              </div>
-              <div style={{ fontSize: 11, color: '#94a3b8', fontFamily: 'monospace' }}>
-                {produtoEditando.QR_CODE}
-              </div>
-            </div>
-          </div>
-
-          {feedbackEdit && <div className="feedback error">{feedbackEdit}</div>}
-
-          {/* Identificação */}
-          <div className="form-section-title">Identificação</div>
-          <div className="form-group" style={{ marginBottom: 14 }}>
-            <label>Nome do Produto <span className="required-mark">*</span></label>
-            <input
-              value={formEdit.nome}
-              onChange={e => setFormEdit(f => ({ ...f, nome: e.target.value }))}
-              placeholder="Nome do produto"
-              autoFocus
-            />
-          </div>
-          <div className="form-row" style={{ marginBottom: 20 }}>
-            <div className="form-group">
-              <label>Unidade <span className="required-mark">*</span></label>
-              <select value={formEdit.unidade} onChange={e => setFormEdit(f => ({ ...f, unidade: e.target.value }))}>
-                <option value="">Selecione...</option>
-                {unidades.map(u => <option key={u}>{u}</option>)}
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Código de Barras <span style={{ color: '#94a3b8', fontWeight: 400 }}>(opcional)</span></label>
-              <input
-                value={formEdit.codigoBarra}
-                onChange={e => setFormEdit(f => ({ ...f, codigoBarra: e.target.value }))}
-                placeholder="EAN / SKU"
-              />
-            </div>
-          </div>
-
-          {/* Estoque */}
-          <div className="form-section-title">Estoque</div>
-          <div className="form-row" style={{ marginBottom: 14 }}>
-            <div className="form-group">
-              <label>Estoque Atual <span className="required-mark">*</span></label>
-              <input
-                type="number" min="0"
-                value={formEdit.estoque}
-                onChange={e => setFormEdit(f => ({ ...f, estoque: e.target.value }))}
-                placeholder="0"
-              />
-            </div>
-            <div className="form-group">
-              <label>Estoque Mínimo <span className="required-mark">*</span></label>
-              <input
-                type="number" min="0"
-                value={formEdit.minimo}
-                onChange={e => setFormEdit(f => ({ ...f, minimo: e.target.value }))}
-                placeholder="0"
-              />
-            </div>
-          </div>
-
-          {/* Preview status */}
-          {formEdit.estoque !== '' && formEdit.minimo !== '' && (() => {
-            const st = statusEstoque(parseInt(formEdit.estoque)||0, parseInt(formEdit.minimo)||0);
-            return (
-              <div style={{
-                background: '#f8fafc', borderRadius: 8, padding: '10px 14px',
-                border: '1px solid #e2e8f0', marginBottom: 4,
-                display: 'flex', alignItems: 'center', gap: 8, fontSize: 13
-              }}>
-                <span style={{ color: '#64748b' }}>Status após salvar:</span>
-                <span className={`badge ${st.cls}`}>{st.text}</span>
-              </div>
-            );
-          })()}
-
-          <div className="modal-nav">
-            <button className="btn-step" onClick={fecharEdicao}>Cancelar</button>
-            <button className="btn-step success" onClick={salvarEdicao} disabled={loadingEdit}>
-              {loadingEdit ? 'Salvando...' : '✓ Salvar Alterações'}
-            </button>
-          </div>
-        </Modal>
+      {/* ─── DETALHE DO PRODUTO (drawer lateral) ─── */}
+      {produtoDetalhe && (
+        <DetalheProduto
+          produto={produtoDetalhe}
+          onClose={() => setProdutoDetalhe(null)}
+          onIrTransferencia={(p) => {
+            setProdutoDetalhe(null);
+            // Navegue para a página de transferência com o produto pré-selecionado
+            // Ex: navigate('/transferencia', { state: { produto: p } })
+            console.log('Ir para transferência com produto:', p.PRODUTO);
+          }}
+          onIrReposicao={(p) => {
+            setProdutoDetalhe(null);
+            // Navegue para nova entrada com o produto pré-selecionado
+            // Ex: navigate('/nova-entrada', { state: { produto: p } })
+            console.log('Ir para nova entrada com produto:', p.PRODUTO);
+          }}
+        />
       )}
     </>
   );

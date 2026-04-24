@@ -9,6 +9,8 @@ import Tecnicos from './pages/Tecnicos';
 import Produtos from './pages/Produtos';
 import Relatorios from './pages/Relatorios';
 import Config from './pages/Config';
+import TransferenciaInterna from './pages/TransferenciaInterna';
+import Conferencia from './pages/Conferenciaestoque';
 
 function AppInit() {
   const { carregarDados, iniciarAutoRefresh } = useApp();
@@ -28,13 +30,15 @@ export default function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard"     element={<Dashboard />} />
-            <Route path="/saida"         element={<NovaSaida />} />
-            <Route path="/movimentacoes" element={<Movimentacoes />} />
-            <Route path="/tecnicos"      element={<Tecnicos />} />
-            <Route path="/produtos"      element={<Produtos />} />
-            <Route path="/relatorios"    element={<Relatorios />} />
-            <Route path="/config"        element={<Config />} />
+            <Route path="/dashboard"            element={<Dashboard />} />
+            <Route path="/saida"                element={<NovaSaida />} />
+            <Route path="/movimentacoes"        element={<Movimentacoes />} />
+            <Route path="/tecnicos"             element={<Tecnicos />} />
+            <Route path="/produtos"             element={<Produtos />} />
+            <Route path="/relatorios"           element={<Relatorios />} />
+            <Route path="/config"               element={<Config />} />
+            <Route path="/transferencia"        element={<TransferenciaInterna />} />
+             <Route path="/conferencia"         element={<Conferencia />} />
           </Route>
         </Routes>
       </BrowserRouter>

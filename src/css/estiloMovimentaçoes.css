@@ -33,7 +33,7 @@
         .period-btn { padding: 6px 12px; font-size: 12px; font-weight: 500; background: transparent; color: var(--text-light,#888); cursor: pointer; border: none; border-right: 1px solid var(--border-color,#e2e8f0); white-space: nowrap; transition: background .1s,color .1s; }
         .period-btn:last-child { border-right: none; }
         .period-btn:hover { background: var(--bg-secondary,#f5f5f5); color: var(--text-color,#333); }
-        .period-btn--active { background: var(--primary-light,#ebf8ff); color: var(--primary,#3182ce); }
+        .period-btn--active { color: var(--primary,#3182ce); }
         .custom-range { display: flex; align-items: center; gap: 6px; padding: 5px 10px; background: var(--bg-secondary,#f5f5f5); border: 1px solid var(--border-color,#e2e8f0); border-radius: 8px; color: var(--text-light,#888); }
         .custom-range input[type=date] { border: none; background: transparent; font-size: 12px; color: var(--text-color,#333); outline: none; cursor: pointer; padding: 2px 0; }
         .custom-range__sep { font-size: 12px; color: var(--text-light,#aaa); }
@@ -45,7 +45,7 @@
         .chip-row__count { margin-left: auto; font-size: 11px; color: var(--text-light,#aaa); }
         .chip { font-size: 11px; padding: 3px 10px; border-radius: 99px; border: 1px solid var(--border-color,#e2e8f0); cursor: pointer; background: transparent; color: var(--text-light,#888); transition: background .1s,color .1s; }
         .chip:hover { background: var(--bg-secondary,#f5f5f5); color: var(--text-color,#333); }
-        .chip--active { background: var(--primary-light,#ebf8ff); color: var(--primary,#3182ce); border-color: var(--primary,#3182ce); font-weight: 500; }
+        .chip--active { color: var(--primary,#3182ce); border-color: var(--primary,#3182ce); font-weight: 500; }
  
         /* table */
         .th-sortable { cursor: pointer; user-select: none; white-space: nowrap; }
@@ -68,7 +68,7 @@
         .pg-btn { border: 1px solid var(--border-color,#e2e8f0); border-radius: 6px; padding: 4px 10px; font-size: 12px; background: transparent; color: var(--text-color,#333); cursor: pointer; transition: background .1s; }
         .pg-btn:hover:not(:disabled) { background: var(--bg-secondary,#f5f5f5); }
         .pg-btn:disabled { opacity: .35; cursor: default; }
-        .pg-btn--active { background: var(--primary-light,#ebf8ff); color: var(--primary,#3182ce); border-color: var(--primary,#3182ce); font-weight: 500; }
+        .pg-btn--active {  color: var(--primary,#3182ce); border-color: var(--primary,#3182ce); font-weight: 500; }
         .pg-ellipsis { font-size: 12px; color: var(--text-light,#aaa); padding: 0 4px; }
  
         /* modal overlay */

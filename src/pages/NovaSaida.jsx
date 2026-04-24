@@ -281,7 +281,7 @@ produtos.forEach(p => {
   const nome = p.PRODUTO;
 
   const estoque = Number(
-    p['ESTOQUE ATUAL'] || 0
+    p['ESTOQUE_SALA'] || 0
   );
 
   estoqueMap[nome] = estoque;
@@ -387,7 +387,7 @@ produtos.forEach(p => {
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <>
-      <PageHeader title="Saída Rápida" subtitle="Registrar saída de materiais" />
+      <PageHeader title="Saída de Reposição" subtitle="Registrar a reposição dos técnicos" />
 
       <div style={s.root}>
 

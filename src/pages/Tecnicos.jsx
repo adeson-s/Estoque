@@ -3,16 +3,29 @@ import { useApp } from '../AppContext';
 import PageHeader from '../components/PageHeader';
 import Modal from '../components/Modal';
 import SheetsService from '../services/SheetsService';
+import DetalheTecnico from '../components/DetalheTecnico';
 
 export default function Tecnicos() {
-  const { dados, carregarDados } = useApp();
-  const { tecnicos } = dados;
+const { dados } = useApp();
+const { tecnicos, movimentacoes } = dados;
 
   const [showModal, setShowModal] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [tecnicoEditando, setTecnicoEditando] = useState(null);
   const [form, setForm] = useState({ nome: '', placa: '', status: '' });
   const [loading, setLoading] = useState(false);
+
+const getHistoricoTecnico = (tecnico) => {
+  return movimentacoes.filter(m => {
+    return (
+      m.ID_TECNICO == tecnico.TÉCNICO || 
+      m.NOME == tecnico['NOME COMPLETO'] // fallback (caso não tenha ID)
+    );
+  });
+};
+
+  // ── Detalhe do técnico ──
+  const [tecnicoDetalhe, setTecnicoDetalhe] = useState(null);
 
   const handleChange = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }));
 
@@ -27,7 +40,7 @@ export default function Tecnicos() {
     setModoEdicao(true);
     setTecnicoEditando(tecnico);
     setForm({
-      nome: tecnico['NOME COMPLETO'] || tecnico.NOME || '',
+      nome: tecnico['NOME COMPLETO'] || tecnico.TÉCNICO || '',
       placa: tecnico.PLACA || '',
       status: tecnico.STATUS || '',
     });
@@ -100,7 +113,14 @@ export default function Tecnicos() {
               </thead>
               <tbody>
                 {tecnicos.map((t, i) => (
-                  <tr key={i}>
+                  <tr
+                    key={i}
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setTecnicoDetalhe({
+  ...t,
+  historico: getHistoricoTecnico(t)
+})}
+                  >
                     <td>{t.ID || i + 1}</td>
                     <td>{t['NOME COMPLETO'] || t.NOME || '—'}</td>
                     <td>{t.PLACA || '—'}</td>
@@ -113,7 +133,7 @@ export default function Tecnicos() {
                       <button
                         className="btn-icon"
                         title="Editar técnico"
-                        onClick={() => abrirModalEdicao(t)}
+                        onClick={e => { e.stopPropagation(); abrirModalEdicao(t); }}
                         style={{
                           background: 'none',
                           border: 'none',
@@ -175,6 +195,14 @@ export default function Tecnicos() {
             </select>
           </div>
         </Modal>
+      )}
+
+      {/* ─── DETALHE DO TÉCNICO (drawer lateral) ─── */}
+      {tecnicoDetalhe && (
+        <DetalheTecnico
+          tecnico={tecnicoDetalhe}
+          onClose={() => setTecnicoDetalhe(null)}
+        />
       )}
     </>
   );
