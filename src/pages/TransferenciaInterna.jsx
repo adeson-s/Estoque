@@ -2,7 +2,7 @@
 import React, { useState, useRef } from 'react';
 import { useApp } from '../AppContext';
 import PageHeader from '../components/PageHeader';
-import LocalStepper from '../components/LocalStepper';
+import LocalStepper from '../components/Localstepper';
 import SheetsService from '../services/SheetsService';
 import { LOCAIS_MAP } from '../data/localHierarchy';
 
