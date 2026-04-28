@@ -302,7 +302,7 @@ export default function DetalheProduto({ produto, onClose, onIrTransferencia, on
   const estoqueSala  = parseInt(produto?.['ESTOQUE_SALA']) || calcEstoqueTotal(movimentacoes, nomeProd);
   const estoqueAtual  = parseInt(produto?.['ESTOQUE_GALPAO']) || 0;
   const estoqueMinimo = parseInt(produto?.['ESTOQUE MÍNIMO']) || 0;
-  const estoqueDispo = parseInt(produto?.['ESTOQUE_SALA + ESTOQUE_GALPAO']) || 0;
+  const estoqueDispo = parseInt(produto?.['ESTOQUE_GALPAO']) || 0;
   const status = statusEstoque(estoqueAtual, estoqueMinimo);
 
   // Abrir edição
