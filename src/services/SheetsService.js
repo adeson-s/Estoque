@@ -1,7 +1,7 @@
 // Feito por Adeson Souza
 // Serviço de integração com Google Sheets
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyNY0dSsovyPSuoWtTxrIv-HWfO2FFv4sqrcgSqEGAsHYRi6ljIcsdRlkWy_BsET3fo/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzZi0aAVno7H-nqYCyomdwmSeJLNpLWRh2kpUoPPXWuFeVICoWBUA5YMgb4bN9uuMrB/exec";
 
 const CONFIG = {
   SHEETS: {

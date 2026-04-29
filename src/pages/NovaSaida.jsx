@@ -3,6 +3,7 @@ import { useApp } from '../AppContext';
 import PageHeader from '../components/PageHeader';
 import SheetsService from '../services/SheetsService';
 import {s } from '../css/estiloNovaSaida';
+import { useAuth } from '../auth/AuthContext';
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
 const STATUS_OPTIONS = ['NÃO ASSOCIOU', 'TROCA', 'SOBRA', 'PERDIDO'];
@@ -255,6 +256,8 @@ export default function NovaSaida() {
   const { dados, carregarDados } = useApp();
   const { tecnicos = [], produtos = [], movimentacoes = [] } = dados;
 
+  const { usuario } = useAuth();
+
   const today = new Date().toISOString().split('T')[0];
 
   const [data,     setData]     = useState(today);
@@ -335,6 +338,8 @@ produtos.forEach(p => {
     }
   }, [produtos, addToCart]);
 
+  
+
   // ── Confirmar saída ────────────────────────────────────────────────────────
   const handleConfirmar = async () => {
     const itens = Object.entries(cart).filter(([, v]) => v.qty > 0);
@@ -363,6 +368,7 @@ produtos.forEach(p => {
           quantidade:  item.qty,
           status:      item.status,
           observacoes: item.obs || '',
+           registro:    usuario?.name || usuario?.username || '',
         };
         const res = await SheetsService.salvarMovimentacao(payload);
         if (!res.success) throw new Error(res.error || `Falha em "${nome}"`);

@@ -44,6 +44,7 @@ function DetalheModal({ mov, onClose }) {
     { label: 'Placa',      value: mov.PLACA || '—', mono: true },
     { label: 'Quantidade', value: String(mov.QUANTIDADE || '—') },
     { label: 'OS / Ref.',  value: mov.OS || mov['O.S'] || mov.ORDEM || '—' },
+     { label: 'Registrado por', value: mov.REGISTRO || mov['REGISTRO'] || '—' },
   ].filter(f => f.value && f.value !== '—');
 
   return (
