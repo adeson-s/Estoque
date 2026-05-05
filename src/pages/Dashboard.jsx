@@ -253,13 +253,13 @@ export default function Dashboard() {
   }, [movimentacoes]);
 
   const alertas = useMemo(() =>
-    produtos.filter(p=>(parseInt(p['ESTOQUE ATUAL'])||0)<=(parseInt(p['ESTOQUE MÍNIMO'])||0))
+    produtos.filter(p=>(parseInt(p['ESTOQUE_GALPAO'])||0)<=(parseInt(p['ESTOQUE MÍNIMO'])||0))
   ,[produtos]);
 
   const alertasOrd = useMemo(() =>
     [...alertas].sort((a,b)=>
-      stockPct(parseInt(a['ESTOQUE ATUAL'])||0,parseInt(a['ESTOQUE MÍNIMO'])||1)-
-      stockPct(parseInt(b['ESTOQUE ATUAL'])||0,parseInt(b['ESTOQUE MÍNIMO'])||1)
+      stockPct(parseInt(a['ESTOQUE_GALPAO'])||0,parseInt(a['ESTOQUE MÍNIMO'])||1)-
+      stockPct(parseInt(b['ESTOQUE_GALPAO'])||0,parseInt(b['ESTOQUE MÍNIMO'])||1)
     )
   ,[alertas]);
 
@@ -477,7 +477,7 @@ export default function Dashboard() {
             ):(
               <div style={{display:'flex',flexDirection:'column',gap:7}}>
                 {alertasOrd.map((p,i)=>{
-                  const atual=parseInt(p['ESTOQUE ATUAL'])||0;
+                  const atual=parseInt(p['ESTOQUE_GALPAO'])||0;
                   const min  =parseInt(p['ESTOQUE MÍNIMO'])||0;
                   const pc   =stockPct(atual,min);
                   const crit =pc<=30;

@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useApp } from '../AppContext';
 import PageHeader from '../components/PageHeader';
+import SheetsService from '../services/SheetsService';
 
 // ─── Kits inline (equivalente ao kits.json) ───────────────────────────────────
 
@@ -76,8 +77,8 @@ function calcStatus(d) {
   if (n < 0) return 'FALTANDO';
   return 'OK';
 }
-function calcDif(fisico, padrao) {
-  return (Number(fisico) || 0) - (Number(padrao) || 0);
+function calcDif(fisico, sos) {
+  return (Number(fisico) || 0) - (Number(sos) || 0);
 }
 function fmtDif(d) {
   const n = Number(d);
@@ -541,7 +542,10 @@ export default function ConferenciaEstoque() {
   const tecnicos = dados?.tecnicos || [];
 
   const [aba, setAba]                 = useState('novo');
-  const [relatorios, setRelatorios]   = useState(() => carregarLocal());
+  const [relatorios, setRelatorios]     = useState([]);
+const [loadingHist, setLoadingHist]   = useState(false);
+const [erroHist, setErroHist]         = useState(null);
+
   const [previewRel, setPreviewRel]   = useState(null);
   const [feedback, setFeedback]       = useState(null);
   const [kitCarregado, setKitCarregado] = useState(false);
@@ -576,15 +580,33 @@ export default function ConferenciaEstoque() {
     setTimeout(() => setFeedback(null), 3000);
   }
 
+const carregarHistorico = useCallback(async () => {
+  setLoadingHist(true);
+  setErroHist(null);
+  try {
+    const lista = await SheetsService.listarConferencias();
+    setRelatorios(lista);
+  } catch (err) {
+    setErroHist('Não foi possível carregar o histórico: ' + err.message);
+  } finally {
+    setLoadingHist(false);
+  }
+}, []);
+
+// Carrega ao montar e ao trocar para a aba histórico
+useEffect(() => {
+  if (aba === 'historico') carregarHistorico();
+}, [aba, carregarHistorico]);
+
   // ── Handlers de itens ──
   function updateItem(id, campo, valor) {
     setItens(prev => prev.map(item => {
       if (item._secao || item.id !== id) return item;
       const updated = { ...item, [campo]: valor };
-      if (campo === 'fisico' || campo === 'padrao') {
+      if (campo === 'fisico' || campo === 'sos') {
         const dif = calcDif(
           campo === 'fisico' ? valor : item.fisico,
-          campo === 'padrao' ? valor : item.padrao,
+          campo === 'sos' ? valor : item.sos,
         );
         updated.diferenca = dif;
         updated.status    = calcStatus(dif);
@@ -617,20 +639,36 @@ export default function ConferenciaEstoque() {
     setFeedback(null);
   }
 
-  function salvarRelatorio() {
-    const itensReais = itens.filter(i => !i._secao);
-    if (!cabecalho.tecnico.trim() || !cabecalho.carro.trim() || !cabecalho.estoque) {
-      setFeedback({ tipo:'error', msg:'Preencha Estoque, Carro e Técnico antes de salvar.' }); return;
-    }
-    if (itensReais.length === 0) {
-      setFeedback({ tipo:'error', msg:'Adicione ao menos um item ao relatório.' }); return;
-    }
-
-    const novoRel = { id:Date.now(), criadoEm:new Date().toISOString(), ...cabecalho, itens };
-    setRelatorios(prev => [novoRel, ...prev]);
-    setFeedback({ tipo:'success', msg:`✓ Relatório salvo com ${itensReais.length} itens!` });
-    setTimeout(() => { setPreviewRel(novoRel); setAba('historico'); }, 800);
+  async function salvarRelatorio() {
+  const itensReais = itens.filter(i => !i._secao);
+  if (!cabecalho.tecnico.trim() || !cabecalho.carro.trim() || !cabecalho.estoque) {
+    setFeedback({ tipo: 'error', msg: 'Preencha Estoque, Carro e Técnico antes de salvar.' });
+    return;
   }
+  if (itensReais.length === 0) {
+    setFeedback({ tipo: 'error', msg: 'Adicione ao menos um item ao relatório.' });
+    return;
+  }
+
+  setFeedback({ tipo: 'info', msg: 'Salvando na planilha...' });
+
+  const novoRel = {
+    id: Date.now(),
+    criadoEm: new Date().toISOString(),
+    ...cabecalho,
+    itens,
+  };
+
+  try {
+    const result = await SheetsService.salvarConferencia(novoRel);
+    if (!result.success) throw new Error(result.error || 'Falha ao salvar');
+
+    setFeedback({ tipo: 'success', msg: `✓ Salvo na planilha com ${itensReais.length} itens!` });
+    setTimeout(() => { setPreviewRel(novoRel); setAba('historico'); }, 800);
+  } catch (err) {
+    setFeedback({ tipo: 'error', msg: 'Erro ao salvar: ' + err.message });
+  }
+}
 
   function excluirRelatorio(id, e) {
     e.stopPropagation();
@@ -882,7 +920,35 @@ export default function ConferenciaEstoque() {
         {/* ════════ ABA HISTÓRICO ════════ */}
         {aba === 'historico' && (
           <>
-            {relatorios.length === 0 ? (
+{/* Botão recarregar */}
+    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
+      <div style={{ fontSize:13, color:'#888', fontWeight:600 }}>
+        {loadingHist ? 'Carregando...' : `${relatorios.length} relatório(s) na planilha`}
+      </div>
+      <div style={{ display:'flex', gap:8 }}>
+        <button onClick={carregarHistorico}
+          style={{ display:'flex', alignItems:'center', gap:6, padding:'9px 16px', borderRadius:9, border:'1.5px solid #e0e0e0', background:'#f5f5f5', color:'#555', fontSize:12, fontWeight:700, cursor:'pointer', fontFamily:'inherit' }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 109-9M3 3v4h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          Atualizar
+        </button>
+        <button onClick={() => setAba('novo')}
+          style={{ display:'flex', alignItems:'center', gap:7, padding:'9px 18px', borderRadius:9, border:'none', background:'linear-gradient(135deg,#185FA5,#1a7fd4)', color:'#fff', fontSize:13, fontWeight:800, cursor:'pointer', boxShadow:'0 3px 10px rgba(24,95,165,0.3)', fontFamily:'inherit' }}>
+          + Novo Relatório
+        </button>
+      </div>
+    </div>
+
+    {erroHist && (
+      <div style={{ padding:'12px 16px', borderRadius:10, border:'1.5px solid #E24B4A', background:'#E24B4A14', color:'#A32D2D', fontSize:13, fontWeight:600, marginBottom:16 }}>
+        ⚠ {erroHist}
+      </div>
+    )}
+
+    {loadingHist ? (
+      <div style={{ padding:'60px 20px', textAlign:'center', color:'#bbb', fontSize:14 }}>
+        Buscando da planilha...
+      </div>
+    ) : relatorios.length === 0 ? (
               <div style={{ padding:'60px 20px', textAlign:'center', color:'#bbb' }}>
                 <div style={{ fontSize:48, marginBottom:12 }}>📋</div>
                 <div style={{ fontSize:15, fontWeight:700, color:'#888', marginBottom:8 }}>Nenhum relatório salvo ainda</div>

@@ -9,6 +9,7 @@ const navItems = [
   { page: '/movimentacoes', icon: 'fas fa-list',            label: 'Movimentações' },
   { page: '/tecnicos',      icon: 'fas fa-users',           label: 'Técnicos' },
   { page: '/produtos',      icon: 'fas fa-boxes',           label: 'Produtos' },
+  { page: '/conferencia',   icon: 'fas fa-car',           label: 'Levantamento' },
 ];
 
 const syncConfig = {

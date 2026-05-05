@@ -1,7 +1,7 @@
 // Feito por Adeson Souza
 // Serviço de integração com Google Sheets
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzZi0aAVno7H-nqYCyomdwmSeJLNpLWRh2kpUoPPXWuFeVICoWBUA5YMgb4bN9uuMrB/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzL4mXREOI4GR3TwNFarg8VDf8eKkhxuNWpHQYn2LyHOnqbzzKJVO2HgDs4KY62hfD2/exec";
 
 const CONFIG = {
   SHEETS: {
@@ -87,6 +87,42 @@ async function salvarProduto(produto) {
   return res.json();
 }
 
+
+async function salvarConferencia(relatorio) {
+  const formData = new URLSearchParams();
+  formData.append("dados", JSON.stringify({
+    acao: "salvarConferencia",
+    ...relatorio,
+  }));
+  const res = await fetch(SCRIPT_URL, { method: "POST", body: formData });
+  return res.json();
+}
+
+async function listarConferencias() {
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.sheetId}/values/CONFERENCIAS?key=${CONFIG.apiKey}&t=${Date.now()}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Erro ao acessar planilha: ${res.status}`);
+  const data = await res.json();
+  const valores = data.values || [];
+  if (valores.length === 0) return [];
+
+  // Mapeia por posição (sem depender de cabeçalho)
+  return valores.map(row => {
+    let itens = [];
+    try { itens = JSON.parse(row[10] || '[]'); } catch { itens = []; }
+    return {
+      id:         row[0]  || '',
+      data:       row[1]  || '',
+      estoque:    row[2]  || '',
+      tecnico:    row[3]  || '',
+      carro:      row[4]  || '',
+      estoquista: row[5]  || '',
+      itens,
+    };
+  }).reverse();
+}
+
+
 async function testarConexao() {
   try {
     await readSheet(CONFIG.SHEETS.MOVIMENTACOES);
@@ -146,4 +182,6 @@ export default {
   testarConexao,
   formatDate,
   clearCache,
+   salvarConferencia,
+  listarConferencias,
 };

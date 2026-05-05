@@ -177,14 +177,13 @@ export default function LocalStepper({ label, value, onChange, exclude }) {
     onChange('');
   }
 
-  // Filtra opções excluindo o local proibido e toda a sua subárvore
-  function isExcluded(nodeId) {
-    if (!exclude) return false;
-    if (nodeId === exclude) return true;
-    // Verifica se exclude está dentro deste nó
-    const excludePath = buildPath(exclude, HIERARCHY);
-    return excludePath ? excludePath.includes(nodeId) : false;
-  }
+function isExcluded(nodeId) {
+  if (!exclude) return false;
+  if (nodeId === exclude) return true;
+  // Só bloqueia descendentes do nó excluído, nunca ancestrais
+  const nodePath = buildPath(nodeId, HIERARCHY);
+  return nodePath ? nodePath.includes(exclude) : false;
+}
 
   const finalInfo = value ? LOCAIS_MAP[value] : null;
 
