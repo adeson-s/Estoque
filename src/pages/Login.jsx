@@ -1,4 +1,5 @@
 // src/pages/Login.jsx
+
 import React, { useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 
@@ -8,32 +9,46 @@ export default function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
-  const [erro,     setErro]     = useState('');
-  const [loading,  setLoading]  = useState(false);
+  const [erro, setErro] = useState('');
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!username.trim() || !password) {
-      setErro('Preencha usuário e senha.');
-      return;
+
+    if (!username.trim()) {
+      return setErro('Preencha o usuário.');
     }
+
+    if (!password) {
+      return setErro('Preencha a senha.');
+    }
+
     setLoading(true);
     setErro('');
-    await new Promise(r => setTimeout(r, 400));
-    const result = login(username, password);
+
+    const result = await login(username, password);
+
     if (!result.ok) {
       setErro(result.erro);
       setLoading(false);
     }
-    // Se ok → AuthContext atualiza → App redireciona automaticamente
   }
 
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #FFF; font-family: 'DM Sans', system-ui, sans-serif; }
+
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+
+        body {
+          background: #FFF;
+          font-family: 'DM Sans', system-ui, sans-serif;
+        }
 
         .login-bg {
           min-height: 100vh;
@@ -148,7 +163,9 @@ export default function Login() {
           box-shadow: 0 0 0 3px rgba(34,197,94,0.12);
         }
 
-        .input-wrap input::placeholder { color: #bbb; }
+        .input-wrap input::placeholder {
+          color: #bbb;
+        }
 
         .pass-toggle {
           position: absolute;
@@ -165,7 +182,10 @@ export default function Login() {
           border-radius: 5px;
           transition: color 0.12s;
         }
-        .pass-toggle:hover { color: #22c55e; }
+
+        .pass-toggle:hover {
+          color: #22c55e;
+        }
 
         .erro-msg {
           display: flex;
@@ -199,11 +219,16 @@ export default function Login() {
           transition: background 0.15s, transform 0.12s;
           margin-top: 4px;
         }
+
         .btn-entrar:hover:not(:disabled) {
           background: #15803d;
           transform: translateY(-1px);
         }
-        .btn-entrar:disabled { opacity: 0.65; cursor: not-allowed; }
+
+        .btn-entrar:disabled {
+          opacity: 0.65;
+          cursor: not-allowed;
+        }
 
         .spinner {
           width: 16px;
@@ -213,7 +238,12 @@ export default function Login() {
           border-radius: 50%;
           animation: spin 0.65s linear infinite;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
 
         .login-footer-note {
           margin-top: 20px;
@@ -224,49 +254,73 @@ export default function Login() {
           text-align: center;
           line-height: 1.5;
         }
+
       `}</style>
 
       <div className="login-bg">
         <div className="login-card">
 
-          {/* Topo */}
+          {/* TOPO */}
           <div className="login-top">
+
             <div className="login-logo">
               <div className="login-logo-icon">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"
-                    stroke="#0d1f14" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <polyline points="9 22 9 12 15 12 15 22"
-                    stroke="#0d1f14" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path
+                    d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                    stroke="#0d1f14"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+
+                  <polyline
+                    points="9 22 9 12 15 12 15 22"
+                    stroke="#0d1f14"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </div>
+
               <div>
-                <div className="login-logo-name">Leste</div>
-                <div className="login-logo-sub">Estoque Maricá</div>
+                <div className="login-logo-name">
+                  Leste
+                </div>
+
+                <div className="login-logo-sub">
+                  Controle de Estoque
+                </div>
               </div>
             </div>
-            <div className="login-title">Acesse o sistema</div>
-            <div className="login-subtitle">Entre com suas credenciais para continuar</div>
+
+            <div className="login-title">
+              Acesse o sistema
+            </div>
+
+            <div className="login-subtitle">
+              Entre com suas credenciais
+            </div>
+
           </div>
 
-          {/* Formulário */}
+          {/* FORM */}
           <div className="login-body">
+
             <form onSubmit={handleSubmit} noValidate>
 
               {erro && (
                 <div className="erro-msg">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="12"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                  </svg>
                   {erro}
                 </div>
               )}
 
               <div className="field">
-                <label htmlFor="u">Usuário</label>
+                <label htmlFor="u">
+                  Usuário
+                </label>
+
                 <div className="input-wrap">
                   <input
                     id="u"
@@ -274,15 +328,20 @@ export default function Login() {
                     autoComplete="username"
                     placeholder="seu.usuario"
                     value={username}
-                    onChange={e => { setUsername(e.target.value); setErro(''); }}
+                    onChange={(e) => {
+                      setUsername(e.target.value);
+                      setErro('');
+                    }}
                     disabled={loading}
-                    autoFocus
                   />
                 </div>
               </div>
 
               <div className="field">
-                <label htmlFor="p">Senha</label>
+                <label htmlFor="p">
+                  Senha
+                </label>
+
                 <div className="input-wrap">
                   <input
                     id="p"
@@ -290,51 +349,48 @@ export default function Login() {
                     autoComplete="current-password"
                     placeholder="••••••••"
                     value={password}
-                    onChange={e => { setPassword(e.target.value); setErro(''); }}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setErro('');
+                    }}
                     disabled={loading}
                     style={{ paddingRight: 40 }}
                   />
+
                   <button
                     type="button"
                     className="pass-toggle"
                     onClick={() => setShowPass(s => !s)}
                     tabIndex={-1}
                   >
-                    {showPass ? (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                        <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
-                        <line x1="1" y1="1" x2="23" y2="23"/>
-                      </svg>
-                    ) : (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                        <circle cx="12" cy="12" r="3"/>
-                      </svg>
-                    )}
+                    {showPass ? '🙈' : '👁️'}
                   </button>
                 </div>
               </div>
 
-              <button type="submit" className="btn-entrar" disabled={loading}>
+              <button
+                type="submit"
+                className="btn-entrar"
+                disabled={loading}
+              >
                 {loading ? (
-                  <><div className="spinner" /> Verificando...</>
+                  <>
+                    <div className="spinner" />
+                    Verificando...
+                  </>
                 ) : (
                   <>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/>
-                      <polyline points="10 17 15 12 10 7"/>
-                      <line x1="15" y1="12" x2="3" y2="12"/>
-                    </svg>
                     Entrar
                   </>
                 )}
               </button>
+
             </form>
 
             <div className="login-footer-note">
-              Sistema restrito · Contate o administrador se não conseguir acessar
+              Sistema restrito · Contate o administrador
             </div>
+
           </div>
         </div>
       </div>

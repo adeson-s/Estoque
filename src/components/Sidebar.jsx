@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useApp } from '../AppContext';
+import { useAuth } from '../auth/AuthContext';
 
 const navItems = [
   { page: '/dashboard',     icon: 'fas fa-chart-line',      label: 'Dashboard' },
@@ -10,6 +11,7 @@ const navItems = [
   { page: '/tecnicos',      icon: 'fas fa-users',           label: 'Técnicos' },
   { page: '/produtos',      icon: 'fas fa-boxes',           label: 'Produtos' },
   { page: '/conferencia',   icon: 'fas fa-car',           label: 'Levantamento' },
+  { page: '/usuarios',      icon: 'fas fa-user-cog',     label: 'Usuários', adminOnly: true },
 ];
 
 const syncConfig = {
@@ -22,6 +24,7 @@ export default function Sidebar() {
   const navigate  = useNavigate();
   const location  = useLocation();
   const { syncStatus } = useApp();
+  const { isAdmin } = useAuth();
 
   const isActive = (page) =>
     location.pathname === page ||
@@ -275,7 +278,7 @@ export default function Sidebar() {
           />
           <div>
             <div className="sidebar-logo-text">Leste</div>
-            <div className="sidebar-logo-sub">Estoque Maricá</div>
+            <div className="sidebar-logo-sub">Gestão de Estoque</div>
           </div>
         </div>
 
@@ -284,7 +287,10 @@ export default function Sidebar() {
 
         {/* Nav */}
         <nav className="sidebar-nav">
-          {navItems.map((item) => (
+          {navItems
+  .filter(item => !item.adminOnly || isAdmin)
+  .map((item) => (
+
             <button
               key={item.page}
               className={`nav-item ${isActive(item.page) ? 'active' : ''}`}

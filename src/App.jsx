@@ -16,13 +16,16 @@ import Config              from './pages/Config';
 import TransferenciaInterna from './pages/TransferenciaInterna';
 import Conferencia         from './pages/Conferenciaestoque';
 import Login               from './pages/Login';
+import Gerenciamentousuarios               from './pages/Gerenciamentousuarios';
 
 // ─── Inicialização de dados ───────────────────────────────────────────────────
 function AppInit() {
   const { carregarDados, iniciarAutoRefresh } = useApp();
   useEffect(() => {
     carregarDados().then(() => iniciarAutoRefresh());
+    
   }, []);
+  
   return null;
 }
 
@@ -71,6 +74,7 @@ export default function App() {
               <Route path="/config"       element={<Config />} />
               <Route path="/transferencia" element={<TransferenciaInterna />} />
               <Route path="/conferencia"  element={<Conferencia />} />
+              <Route path="/usuarios"  element={<Gerenciamentousuarios />} />
             </Route>
 
             {/* Fallback */}
